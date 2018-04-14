@@ -6,4 +6,6 @@
     <string name="third_activity">third activity</string>
     <string name="long_notification_text">This can be used if you are creating intents where only the extras change, and don\'t care that any entities that received your previous PendingIntent will be able to launch it with your new extras even if they are not explicitly given to it.</string>
     <string name="short_notification_text">short Notification text</string>
+    <string name="open_notification_channel_setting">Open notification channel setting</string>
+    <string name="open_notification_setting">Open notification  setting</string>
 </resources>

@@ -15,9 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 0;
     public static final int NOTIFICATION_ID = 1;
-    public static final String CHANNEL_NAME = "com.hm.notificationdemo.notification_channel";
     private static final String TAG = "MainActivity";
-    private static final String CHANNEL_ID = "MY_CHANNEL";
     private ActivityMainBinding binding;
     private int numMessages;
     private NotificationCompat.Builder builder;
@@ -30,6 +28,12 @@ public class MainActivity extends AppCompatActivity {
         notificationHelper = new NotificationHelper(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        notificationHelper = null;
+    }
+
     public void click(View view) {
         switch (view.getId()) {
             case R.id.btn_send_notification:
@@ -39,10 +43,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btn_launch_second_activity:
                 break;
+            case R.id.btn_open_notification_setting:
+                openNotificationSetting();
+                break;
+            case R.id.btn_open_notification_channel_setting:
+                openNotificationChannelSetting(NotificationHelper.PRIMARY_CHANNEL_ID);
+                break;
             default:
                 break;
         }
-
     }
 
     private void sendNotification() {
@@ -53,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
         builder.setContentIntent(pendingIntent);
         applyExpandedLayout();
         notificationHelper.notify(NOTIFICATION_ID, builder);
+    }
+
+    public void openNotificationSetting() {
+        notificationHelper.openNotificationSetting();
+    }
+
+    public void openNotificationChannelSetting(String channelId) {
+        notificationHelper.openChannelSetting(channelId);
     }
 
     /**
@@ -124,5 +141,4 @@ public class MainActivity extends AppCompatActivity {
                 }
         ).start();
     }
-
 }

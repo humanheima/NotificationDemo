@@ -5,7 +5,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 
 import java.util.Arrays;
@@ -15,8 +19,8 @@ import java.util.Arrays;
  */
 public class NotificationHelper extends ContextWrapper {
 
-    public static final String PRIMARY_CHANNEL = "default";
-    public static final String SECONDARY_CHANNEL = "second";
+    public static final String PRIMARY_CHANNEL_ID = "default";
+    public static final String SECONDARY_CHANNEL_ID = "second";
     public static final String PRIMARY_HANNEL_NAME = "com.hm.notificationdemo.notification_default_channel";
     public static final String SECONDARY_HANNEL_NAME = "com.hm.notificationdemo.notification_secondary_channel";
     private final String TAG = getClass().getSimpleName();
@@ -26,13 +30,13 @@ public class NotificationHelper extends ContextWrapper {
         super(cxt);
         getManager();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel primaryChannel = new NotificationChannel(PRIMARY_CHANNEL, PRIMARY_HANNEL_NAME,
-                    NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel primaryChannel = new NotificationChannel(PRIMARY_CHANNEL_ID, PRIMARY_HANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH);
             primaryChannel.enableLights(true);
             primaryChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
 
-            NotificationChannel secondaryChannel = new NotificationChannel(SECONDARY_CHANNEL,
-                    SECONDARY_HANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel secondaryChannel = new NotificationChannel(SECONDARY_CHANNEL_ID,
+                    SECONDARY_HANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             secondaryChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
             getManager().createNotificationChannels(Arrays.asList(primaryChannel, secondaryChannel));
@@ -47,7 +51,7 @@ public class NotificationHelper extends ContextWrapper {
     }
 
     public NotificationCompat.Builder getPrimaryNotification(String title, String text) {
-        return new NotificationCompat.Builder(getApplicationContext(), PRIMARY_CHANNEL)
+        return new NotificationCompat.Builder(getApplicationContext(), PRIMARY_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setWhen(System.currentTimeMillis())
@@ -63,7 +67,7 @@ public class NotificationHelper extends ContextWrapper {
     }
 
     public NotificationCompat.Builder getSecondrayNotification(String title, String text) {
-        return new NotificationCompat.Builder(getApplicationContext(), SECONDARY_CHANNEL)
+        return new NotificationCompat.Builder(getApplicationContext(), SECONDARY_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setSmallIcon(getSmallIcon())
@@ -74,5 +78,25 @@ public class NotificationHelper extends ContextWrapper {
     public void notify(int id, NotificationCompat.Builder notification) {
         getManager().notify(id, notification.build());
     }
+
+    public void openChannelSetting(String channelId) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Intent intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+            intent.putExtra(Settings.EXTRA_CHANNEL_ID, channelId);
+            if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null)
+                startActivity(intent);
+        }
+    }
+
+    public void openNotificationSetting() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+            if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null)
+                startActivity(intent);
+        }
+    }
+
 
 }
