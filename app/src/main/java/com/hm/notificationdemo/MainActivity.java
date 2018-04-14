@@ -1,15 +1,11 @@
 package com.hm.notificationdemo;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
@@ -17,22 +13,21 @@ import com.hm.notificationdemo.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
-
     public static final int REQUEST_CODE = 0;
     public static final int NOTIFICATION_ID = 1;
-    private static final String CHANNEL_ID = "MY_CHANNEL";
     public static final String CHANNEL_NAME = "com.hm.notificationdemo.notification_channel";
+    private static final String TAG = "MainActivity";
+    private static final String CHANNEL_ID = "MY_CHANNEL";
     private ActivityMainBinding binding;
     private int numMessages;
     private NotificationCompat.Builder builder;
-    private NotificationHepler notificationHepler;
+    private NotificationHelper notificationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        notificationHepler = new NotificationHepler(this);
+        notificationHelper = new NotificationHelper(this);
     }
 
     public void click(View view) {
@@ -51,12 +46,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void sendNotification() {
-        builder = notificationHepler.getPrimaryNotification("My notification", "Hello world");
+        builder = notificationHelper.getPrimaryNotification("My notification",
+                getString(R.string.short_notification_text));
         Intent newIntent = new Intent(this, ThirdActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, REQUEST_CODE, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
         applyExpandedLayout();
-        notificationHepler.notify(NOTIFICATION_ID, builder);
+        notificationHelper.notify(NOTIFICATION_ID, builder);
+    }
+
+    /**
+     * 将扩展布局应用于通知,使通知出现在展开视图中
+     */
+    private void applyExpandedLayout() {
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        String[] events = new String[6];
+        for (int i = 0; i < events.length; i++) {
+            events[i] = i + ".event";
+        }
+        // inboxStyle.setBigContentTitle("Event tracker details:");
+        for (int i = 0; i < events.length; i++) {
+            inboxStyle.addLine(events[i]);
+        }
+        inboxStyle.setSummaryText("In box style");
+        inboxStyle.setBigContentTitle("In box content title");//如果不设置的话，默认就是Builder.setContentTitle传入的值
+        builder.setStyle(inboxStyle);
     }
 
     /**
@@ -68,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         builder.setProgress(0, 0, true);
-                        notificationHepler.notify(NOTIFICATION_ID, builder);
+                        notificationHelper.notify(NOTIFICATION_ID, builder);
                         try {
                             Thread.sleep(3000);
                         } catch (InterruptedException e) {
@@ -76,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         builder.setContentText("Download complete")
                                 .setProgress(0, 0, false);
-                        notificationHepler.notify(NOTIFICATION_ID, builder);
+                        notificationHelper.notify(NOTIFICATION_ID, builder);
                     }
                 }
         ).start();
@@ -94,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                         for (incr = 0; incr <= 100; incr += 10) {
                             builder.setProgress(100, incr, false);
                             // Displays the progress bar for the first time.
-                            notificationHepler.notify(NOTIFICATION_ID, builder);
+                            notificationHelper.notify(NOTIFICATION_ID, builder);
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
@@ -105,26 +119,10 @@ public class MainActivity extends AppCompatActivity {
                         builder.setContentText("Download complete")
                                 // Removes the progress bar
                                 .setProgress(0, 0, false);
-                        notificationHepler.notify(NOTIFICATION_ID, builder);
+                        notificationHelper.notify(NOTIFICATION_ID, builder);
                     }
                 }
         ).start();
-    }
-
-    /**
-     * 将扩展布局应用于通知,使通知出现在展开视图中
-     */
-    private void applyExpandedLayout() {
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        String[] events = new String[6];
-        for (int i = 0; i < events.length; i++) {
-            events[i] = "event i";
-        }
-        // inboxStyle.setBigContentTitle("Event tracker details:");
-        for (int i = 0; i < events.length; i++) {
-            inboxStyle.addLine(events[i]);
-        }
-        builder.setStyle(inboxStyle);
     }
 
 }
