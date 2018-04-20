@@ -14,7 +14,9 @@ import com.hm.notificationdemo.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 0;
-    public static final int NOTIFICATION_ID = 1;
+    public static final int PRIMARY_NOTIFICATION_ID = 1;
+    public static final int SECONDARY_NOTIFICATION_ID = 2;
+
     private static final String TAG = "MainActivity";
     private ActivityMainBinding binding;
     private int numMessages;
@@ -36,8 +38,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void click(View view) {
         switch (view.getId()) {
-            case R.id.btn_send_notification:
+            case R.id.btn_send_primary_notification:
                 sendNotification();
+                break;
+            case R.id.btn_send_secondary_notification:
+                sendSecondaryNotification();
                 break;
             case R.id.btn_launch_first_activity:
                 break;
@@ -57,11 +62,24 @@ public class MainActivity extends AppCompatActivity {
     private void sendNotification() {
         builder = notificationHelper.getPrimaryNotification("My notification",
                 getString(R.string.short_notification_text));
+        builder.setNumber(2);
         Intent newIntent = new Intent(this, ThirdActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, REQUEST_CODE, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
+
         applyExpandedLayout();
-        notificationHelper.notify(NOTIFICATION_ID, builder);
+        notificationHelper.notify(PRIMARY_NOTIFICATION_ID, builder);
+    }
+
+    private void sendSecondaryNotification() {
+        builder = notificationHelper.getSecondaryNotification("My notification",
+                getString(R.string.short_notification_text));
+        if (null != builder) {
+            Intent newIntent = new Intent(this, SecondActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, REQUEST_CODE, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            builder.setContentIntent(pendingIntent);
+            notificationHelper.notify(SECONDARY_NOTIFICATION_ID, builder);
+        }
     }
 
     public void openNotificationSetting() {
@@ -99,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         builder.setProgress(0, 0, true);
-                        notificationHelper.notify(NOTIFICATION_ID, builder);
+                        notificationHelper.notify(PRIMARY_NOTIFICATION_ID, builder);
                         try {
                             Thread.sleep(3000);
                         } catch (InterruptedException e) {
@@ -107,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         builder.setContentText("Download complete")
                                 .setProgress(0, 0, false);
-                        notificationHelper.notify(NOTIFICATION_ID, builder);
+                        notificationHelper.notify(PRIMARY_NOTIFICATION_ID, builder);
                     }
                 }
         ).start();
@@ -125,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                         for (incr = 0; incr <= 100; incr += 10) {
                             builder.setProgress(100, incr, false);
                             // Displays the progress bar for the first time.
-                            notificationHelper.notify(NOTIFICATION_ID, builder);
+                            notificationHelper.notify(PRIMARY_NOTIFICATION_ID, builder);
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException e) {
@@ -136,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
                         builder.setContentText("Download complete")
                                 // Removes the progress bar
                                 .setProgress(0, 0, false);
-                        notificationHelper.notify(NOTIFICATION_ID, builder);
+                        notificationHelper.notify(PRIMARY_NOTIFICATION_ID, builder);
                     }
                 }
         ).start();

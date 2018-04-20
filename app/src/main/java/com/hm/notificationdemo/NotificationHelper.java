@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import java.util.Arrays;
 
@@ -66,17 +67,30 @@ public class NotificationHelper extends ContextWrapper {
         return android.R.drawable.stat_notify_chat;
     }
 
-    public NotificationCompat.Builder getSecondrayNotification(String title, String text) {
-        return new NotificationCompat.Builder(getApplicationContext(), SECONDARY_CHANNEL_ID)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setSmallIcon(getSmallIcon())
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), android.R.drawable.stat_notify_chat))
-                .setAutoCancel(true);
+    public NotificationCompat.Builder getSecondaryNotification(String title, String text) {
+        if (notificationChannelEnabled(SECONDARY_CHANNEL_ID)) {
+            return new NotificationCompat.Builder(getApplicationContext(), SECONDARY_CHANNEL_ID)
+                    .setContentTitle(title)
+                    .setContentText(text)
+                    .setSmallIcon(getSmallIcon())
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), android.R.drawable.stat_notify_chat))
+                    .setAutoCancel(true);
+        } else {
+            return null;
+        }
     }
 
-    public void notify(int id, NotificationCompat.Builder notification) {
-        getManager().notify(id, notification.build());
+    private boolean notificationChannelEnabled(String channelId) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = getManager().getNotificationChannel(SECONDARY_CHANNEL_ID);
+            if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
+                Toast.makeText(getApplicationContext(), "Please enable notification!", Toast.LENGTH_SHORT).show();
+                openChannelSetting(channelId);
+                return false;
+            }
+            return true;
+        }
+        return true;
     }
 
     public void openChannelSetting(String channelId) {
@@ -87,6 +101,10 @@ public class NotificationHelper extends ContextWrapper {
             if (getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null)
                 startActivity(intent);
         }
+    }
+
+    public void notify(int id, NotificationCompat.Builder notification) {
+        getManager().notify(id, notification.build());
     }
 
     public void openNotificationSetting() {

@@ -2,7 +2,8 @@
     <string name="app_name">NotificationDemo</string>
     <string name="launch_first_activity">launchFirstActivity</string>
     <string name="launch_second_activity">launchSecondActivity</string>
-    <string name="send_notification">send notification</string>
+    <string name="send_notification">send primary notification</string>
+    <string name="send_secondary_notification">send secondary notification</string>
     <string name="third_activity">third activity</string>
     <string name="long_notification_text">This can be used if you are creating intents where only the extras change, and don\'t care that any entities that received your previous PendingIntent will be able to launch it with your new extras even if they are not explicitly given to it.</string>
     <string name="short_notification_text">short Notification text</string>

@@ -9,11 +9,19 @@
         tools:context="com.hm.notificationdemo.MainActivity">
 
         <Button
-            android:id="@+id/btn_send_notification"
+            android:id="@+id/btn_send_primary_notification"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="click"
             android:text="@string/send_notification"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btn_send_secondary_notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="@string/send_secondary_notification"
             android:textAllCaps="false" />
 
         <Button
