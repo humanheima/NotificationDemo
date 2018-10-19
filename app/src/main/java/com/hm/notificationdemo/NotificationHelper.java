@@ -22,8 +22,8 @@ public class NotificationHelper extends ContextWrapper {
 
     public static final String PRIMARY_CHANNEL_ID = "default";
     public static final String SECONDARY_CHANNEL_ID = "second";
-    public static final String PRIMARY_HANNEL_NAME = "com.hm.notificationdemo.notification_default_channel";
-    public static final String SECONDARY_HANNEL_NAME = "com.hm.notificationdemo.notification_secondary_channel";
+    public static final String PRIMARY_CHANNEL_NAME = "com.hm.notificationdemo.notification_default_channel";
+    public static final String SECONDARY_CHANNEL_NAME = "com.hm.notificationdemo.notification_secondary_channel";
     private final String TAG = getClass().getSimpleName();
     private NotificationManager manager;
 
@@ -31,13 +31,13 @@ public class NotificationHelper extends ContextWrapper {
         super(cxt);
         getManager();
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel primaryChannel = new NotificationChannel(PRIMARY_CHANNEL_ID, PRIMARY_HANNEL_NAME,
+            NotificationChannel primaryChannel = new NotificationChannel(PRIMARY_CHANNEL_ID, PRIMARY_CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH);
             primaryChannel.enableLights(true);
             primaryChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
 
             NotificationChannel secondaryChannel = new NotificationChannel(SECONDARY_CHANNEL_ID,
-                    SECONDARY_HANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                    SECONDARY_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             secondaryChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
             getManager().createNotificationChannels(Arrays.asList(primaryChannel, secondaryChannel));
