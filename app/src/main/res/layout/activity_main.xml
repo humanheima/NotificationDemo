@@ -17,6 +17,22 @@
             android:textAllCaps="false" />
 
         <Button
+            android:id="@+id/btnCreateExpandedNotify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="创建展开式通知"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/btnCustomizeNotify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="click"
+            android:text="创建自定义通知布局"
+            android:textAllCaps="false" />
+
+        <Button
             android:id="@+id/btn_send_secondary_notification"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

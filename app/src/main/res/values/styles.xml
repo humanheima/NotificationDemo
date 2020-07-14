@@ -8,4 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ProgressBarHorizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:minHeight">40dip</item>
+        <item name="android:maxHeight">40dip</item>
+    </style>
+
+
 </resources>

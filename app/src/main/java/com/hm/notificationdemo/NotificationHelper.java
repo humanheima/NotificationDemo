@@ -34,7 +34,8 @@ public class NotificationHelper extends ContextWrapper {
             NotificationChannel primaryChannel = new NotificationChannel(PRIMARY_CHANNEL_ID, PRIMARY_CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH);
             primaryChannel.enableLights(true);
-            primaryChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            //primaryChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            primaryChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
             NotificationChannel secondaryChannel = new NotificationChannel(SECONDARY_CHANNEL_ID,
                     SECONDARY_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
@@ -57,13 +58,14 @@ public class NotificationHelper extends ContextWrapper {
                 .setContentText(text)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(getSmallIcon())
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round))
+                //.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round))
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_MAX)//设置最高优先级
                 .setAutoCancel(true);
     }
 
     private int getSmallIcon() {
+        //运行在不同的机器上，展示的图片可能不一样
         return android.R.drawable.stat_notify_chat;
     }
 
@@ -105,6 +107,10 @@ public class NotificationHelper extends ContextWrapper {
 
     public void notify(int id, NotificationCompat.Builder notification) {
         getManager().notify(id, notification.build());
+    }
+
+    public void notify(int id, Notification notification) {
+        getManager().notify(id, notification);
     }
 
     public void openNotificationSetting() {

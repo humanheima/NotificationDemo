@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="64dp">
+
+    <ImageView
+        android:id="@+id/ivCover"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/ic_notification_big"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        style="@style/ProgressBarHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:max="200"
+        android:progress="50"
+        app:layout_constraintBottom_toBottomOf="@+id/ivCover"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivCover"
+        app:layout_constraintTop_toTopOf="@id/ivCover" />
+
+
+</android.support.constraint.ConstraintLayout>

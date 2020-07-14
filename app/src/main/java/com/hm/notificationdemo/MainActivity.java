@@ -1,15 +1,25 @@
 package com.hm.notificationdemo;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.RemoteViews;
 
 import com.hm.notificationdemo.databinding.ActivityMainBinding;
+
+import static com.hm.notificationdemo.NotificationHelper.PRIMARY_CHANNEL_ID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,23 +33,60 @@ public class MainActivity extends AppCompatActivity {
     private NotificationCompat.Builder builder;
     private NotificationHelper notificationHelper;
 
+    private Notification notification;
+    private RemoteViews notificationLayout;
+
+    private int updateProgressWhat = 100;
+
+    @SuppressLint("HandlerLeak")
+    private Handler handler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == updateProgressWhat) {
+                int progress = msg.arg1;
+                Log.d(TAG, "handleMessage: " + progress);
+                notificationLayout.setProgressBar(R.id.progressBar, 200, progress, false);
+
+                builder.setCustomContentView(notificationLayout);
+                notification = builder.build();
+                notificationHelper.notify(PRIMARY_NOTIFICATION_ID, notification);
+
+                if (progress < 200) {
+                    Message message = handler.obtainMessage(updateProgressWhat);
+                    message.arg1 = ++progress;
+                    handler.sendMessageDelayed(message, 100);
+                }
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         notificationHelper = new NotificationHelper(this);
+        notificationLayout = new RemoteViews(getPackageName(), R.layout.notify_content_view_2);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         notificationHelper = null;
+        handler.removeCallbacksAndMessages(null);
     }
 
     public void click(View view) {
         switch (view.getId()) {
             case R.id.btn_send_primary_notification:
                 sendNotification();
+                break;
+            case R.id.btnCreateExpandedNotify:
+                createExpandedNotify();
+                break;
+            case R.id.btnCustomizeNotify:
+                createCustomizeNotify();
                 break;
             case R.id.btn_send_secondary_notification:
                 sendSecondaryNotification();
@@ -52,11 +99,56 @@ public class MainActivity extends AppCompatActivity {
                 openNotificationSetting();
                 break;
             case R.id.btn_open_notification_channel_setting:
-                openNotificationChannelSetting(NotificationHelper.PRIMARY_CHANNEL_ID);
+                openNotificationChannelSetting(PRIMARY_CHANNEL_ID);
                 break;
             default:
                 break;
         }
+    }
+
+    private void createCustomizeNotify() {
+        /**
+         * 方式一
+         */
+        /*builder = notificationHelper.getPrimaryNotification("展开式通知",
+                getString(R.string.short_notification_text));
+        builder.setCustomContentView(notificationLayout);
+        builder.build();
+        notificationHelper.notify(PRIMARY_NOTIFICATION_ID, builder);*/
+
+        /**
+         * 方式2，就是比上边哪种方式少设置了几个属性
+         */
+        builder = new NotificationCompat.Builder(getApplicationContext(), PRIMARY_CHANNEL_ID)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(android.R.drawable.stat_notify_chat);
+        builder.setCustomContentView(notificationLayout);
+        notification = builder.build();
+
+        notificationHelper.notify(PRIMARY_NOTIFICATION_ID, notification);
+
+        Message message = handler.obtainMessage(updateProgressWhat);
+
+        //点击通知以后，延迟2秒发送第一个message
+        handler.sendMessageDelayed(message, 2000);
+
+
+    }
+
+    private void createExpandedNotify() {
+        builder = notificationHelper.getPrimaryNotification("使用媒体控件创建通知",
+                getString(R.string.short_notification_text));
+        Intent newIntent = new Intent(this, ThirdActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, REQUEST_CODE, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(pendingIntent);
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
+        builder.setLargeIcon(largeIcon);
+        builder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(largeIcon).bigLargeIcon(null));
+
+        builder.build();
+        //applyExpandedLayout();
+        notificationHelper.notify(PRIMARY_NOTIFICATION_ID, builder);
     }
 
     private void sendNotification() {
@@ -159,4 +251,6 @@ public class MainActivity extends AppCompatActivity {
                 }
         ).start();
     }
+
+
 }

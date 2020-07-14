@@ -3,6 +3,11 @@ package com.hm.notificationdemo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+/**
+ * Created by dumingwei on 2020/7/14
+ *
+ * Desc:
+ */
 public class ThirdActivity extends AppCompatActivity {
 
     @Override
