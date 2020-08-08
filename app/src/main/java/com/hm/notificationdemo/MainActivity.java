@@ -7,14 +7,17 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.RemoteViews;
 
 import com.hm.notificationdemo.databinding.ActivityMainBinding;
@@ -46,16 +49,29 @@ public class MainActivity extends AppCompatActivity {
             if (msg.what == updateProgressWhat) {
                 int progress = msg.arg1;
                 Log.d(TAG, "handleMessage: " + progress);
+
                 notificationLayout.setProgressBar(R.id.progressBar, 200, progress, false);
+
+                String progressText = String.valueOf(progress);
+                String finalText = "还有" + progressText + "秒可领取茅台酒";
+                SpannableStringBuilder stringBuilder = new SpannableStringBuilder(finalText);
+                ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor("#009ad6"));
+                int startIndex = finalText.indexOf(progressText);
+                stringBuilder.setSpan(colorSpan, startIndex, startIndex + progressText.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                notificationLayout.setTextViewText(R.id.tvCountDown, stringBuilder);
 
                 builder.setCustomContentView(notificationLayout);
                 notification = builder.build();
+
                 notificationHelper.notify(PRIMARY_NOTIFICATION_ID, notification);
 
-                if (progress < 200) {
+                if (progress <= 200) {
+                    Log.d(TAG, "handleMessage: progress = " + progress);
                     Message message = handler.obtainMessage(updateProgressWhat);
-                    message.arg1 = ++progress;
-                    handler.sendMessageDelayed(message, 100);
+                    progress += 1;
+                    message.arg1 = progress;
+
+                    handler.sendMessageDelayed(message, 1000);
                 }
             }
         }
@@ -86,7 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 createExpandedNotify();
                 break;
             case R.id.btnCustomizeNotify:
-                createCustomizeNotify();
+                //createCustomizeNotify();
+                CustomizeNotificationActivity.launch(this);
                 break;
             case R.id.btn_send_secondary_notification:
                 sendSecondaryNotification();
@@ -122,8 +139,21 @@ public class MainActivity extends AppCompatActivity {
         builder = new NotificationCompat.Builder(getApplicationContext(), PRIMARY_CHANNEL_ID)
                 .setWhen(System.currentTimeMillis())
                 .setSmallIcon(android.R.drawable.stat_notify_chat);
+
+
+        Intent newIntent = new Intent(this, ThirdActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, REQUEST_CODE, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //builder.setContentIntent(pendingIntent);
+
+        notificationLayout.setOnClickPendingIntent(R.id.tvGetCoin, pendingIntent);
+
+
         builder.setCustomContentView(notificationLayout);
+        builder.setOngoing(true);
+        //builder.setAutoCancel(false);
+
         notification = builder.build();
+
 
         notificationHelper.notify(PRIMARY_NOTIFICATION_ID, notification);
 

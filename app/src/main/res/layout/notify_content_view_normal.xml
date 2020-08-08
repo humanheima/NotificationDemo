@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    tools:background="#eeeeee">
+
+    <ImageView
+        android:id="@+id/ivCover"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:src="@drawable/ic_alipay_logo" />
+
+    <TextView
+        android:id="@+id/tvGetCoin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@+id/ivCover"
+        android:text="您的支付宝账户于8月8号到账200000000，请注意查收。"
+        android:textColor="#333333" />
+
+</RelativeLayout>
